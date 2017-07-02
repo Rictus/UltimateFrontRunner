@@ -1,39 +1,53 @@
 'use strict';
-
+var imagemin = require('gulp-imagemin');
 var tasksNames = [];
-var tasks = {};
 /*************************************************/
 //
 //                    I M G
 //
 /*************************************************/
 
-module.exports = function (gulp) {
-    function initImgTask(taskName, taskConf) {
-        var imagemin = require('gulp-imagemin');
-        gulp.task(taskName, function () {
+module.exports = function (opts) {
+    var gulp = opts["gulp"]; //TODO Change to merge() objects
+    var getBrowserSyncInstance = opts["getBrowserSyncInstance"];
+    var logAction = opts["logAction"];
+
+    var _conf = {};
+
+    var init = function (taskName, configuration) {
+        tasksNames = [taskName];
+        _conf["taskName"] = taskName;
+        _conf["taskConfiguration"] = configuration;
+        _conf["streamFunction"] = _buildStreamFunction(configuration);
+    };
+
+    var _buildStreamFunction = function () {
+        var taskConf = _conf["taskConfiguration"];
+        return function () {
             var stream;
-            if (taskConf.active) {
-                stream = gulp.src(taskConf.watchPath);
-                stream = stream.pipe(imagemin());
-                stream = stream.pipe(gulp.dest(taskConf.destPath));
-                return stream;
+            stream = gulp.src(taskConf.watchPath);
+            stream = stream.pipe(imagemin());
+            if (!Array.isArray(taskConf.destPath)) {
+                taskConf.destPath = [taskConf.destPath];
             }
-        });
-        tasksNames.push(taskName);
-        gulp.watch(taskConf.watchPath, [taskName]);
-    }
+            for (var i = 0; i < taskConf.destPath.length; i++) {
+                var destPath = taskConf.destPath[i];
+                stream = stream.pipe(gulp.dest(destPath));
+            }
+            return stream;
+        }
+    };
+
+    var start = function () {
+        gulp.task(_conf["taskName"], _conf["streamFunction"]);
+        gulp.watch(_conf["taskConfiguration"].watchPath, [_conf["taskName"]]);
+    };
 
     return {
-        init: function (conf) {
-            for (var key in conf) {
-                if (conf.hasOwnProperty(key) && conf[key].active) {
-                    tasks[key] = initImgTask("img" + key, conf[key]);
-                }
-            }
-        },
+        init: init,
+        start: start,
         getTasksNames: function () {
             return tasksNames;
         }
-    }
+    };
 };

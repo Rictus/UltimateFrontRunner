@@ -1,5 +1,10 @@
 'use strict';
-
+var autoprefixer = require('gulp-autoprefixer');
+var minify = require('gulp-minify-css');
+var rename = require('gulp-rename');
+var less = require('gulp-less');
+var plumber = require('gulp-plumber');
+var concat = require('gulp-concat');
 var tasks = {};
 var tasksNames = [];
 /*************************************************/
@@ -9,15 +14,23 @@ var tasksNames = [];
 /*************************************************/
 
 
-module.exports = function (gulp, getBrowserSyncInstance) {
-    function initCssTask(taskName, taskConf) {
-        var autoprefixer = require('gulp-autoprefixer');
-        var minify = require('gulp-minify-css');
-        var rename = require('gulp-rename');
-        var less = require('gulp-less');
-        var plumber = require('gulp-plumber');
-        var concat = require('gulp-concat');
-        var outStream = gulp.task(taskName, function () {
+module.exports = function (opts) {
+    var gulp = opts["gulp"]; //TODO Change to merge() objects
+    var getBrowserSyncInstance = opts["getBrowserSyncInstance"];
+    var logAction = opts["logAction"];
+
+    var _conf = {};
+
+    var _init = function (taskName, configuration) {
+        tasksNames = [taskName];
+        _conf["taskName"] = taskName;
+        _conf["taskConfiguration"] = configuration;
+        _conf["streamFunction"] = _buildStreamFunction(configuration);
+    };
+
+    var _buildStreamFunction = function () {
+        var taskConf = _conf["taskConfiguration"];
+        return function () {
             var stream;
             stream = gulp.src(taskConf.watchPath);
             stream = stream.pipe(plumber());
@@ -25,23 +38,22 @@ module.exports = function (gulp, getBrowserSyncInstance) {
             stream = taskConf.concat ? stream.pipe(concat(taskConf.renameTo)) : stream;
             stream = taskConf.autoprefix ? stream.pipe(autoprefixer(taskConf.autoprefixString)) : stream;
             stream = taskConf.minify ? stream.pipe(minify()) : stream;
-            stream = stream.pipe(gulp.dest(taskConf.destPath));
+            for (var i = 0; i < taskConf.destPath.length; i++) {
+                var destPath = taskConf.destPath[i];
+                stream = stream.pipe(gulp.dest(destPath));
+            }
             stream = taskConf.streamCss ? stream.pipe(getBrowserSyncInstance().stream()) : stream;
             return stream;
-        });
-        tasksNames.push(taskName);
-        gulp.watch(taskConf.watchPath, [taskName]);
-        return outStream;
-    }
+        };
+    };
+    var _start = function () {
+        gulp.task(_conf["taskName"], _conf["streamFunction"]);
+        gulp.watch(_conf["taskConfiguration"].watchPath, [_conf["taskName"]]);
+    };
 
     return {
-        init: function (conf) {
-            for (var key in conf) {
-                if (conf.hasOwnProperty(key) && conf[key].active) {
-                    tasks[key] = initCssTask("css" + key, conf[key]);
-                }
-            }
-        },
+        init: _init,
+        start: _start,
         getTasksNames: function () {
             return tasksNames;
         }

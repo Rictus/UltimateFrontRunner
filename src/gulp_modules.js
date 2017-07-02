@@ -1,71 +1,96 @@
 'use strict';
-var gulpServer = require('./gulpfile_server.js')(gulp);
-var gulpCss = require('./gulpfile_css.js')(gulp, gulpServer.getBrowserSyncInstance);
-var gulpHtml = require('./gulp_html.js')(gulp, gulpServer.getBrowserSyncInstance, function (log) {
-    console.log("[HTML] " + log);
-});
-var gulpJs = require('./gulpfile_js.js')(gulp, gulpServer.getBrowserSyncInstance);
-var gulpImg = require('./gulpfile_img.js')(gulp);
-var tksNames;
-
-
 
 module.exports = function (gulp, modulesConfigurations, browserConfiguration) {
+    var _gulpServer = require('./gulpfile_server.js')(gulp);
 
-    var _iConf = {
+    var _modulePerType = {
+        "server": require('./gulpfile_server.js'),
+        "css": require('./gulpfile_css.js'),
+        "html": require('./gulp_html.js'),
+        "js": require('./gulpfile_js.js'),
+        "img": require('./gulpfile_img.js')
+    };
+    var _conf = {
         tasksThatReloadBrowser: [],
         tasksToCompleteBeforeBrowser: [],
-        startupTasks: []
+        startupTasks: [],
+        tasks: {}
     };
 
-    var _addModules = function (conf) {
-        if ("css" in conf)
-            conf["css"]["module"] = gulpCss;
-        if ("js" in conf)
-            conf["js"]["module"] = gulpJs;
-        if ("img" in conf)
-            conf["img"]["module"] = gulpImg;
-        if ("html" in conf)
-            conf["html"]["module"] = gulpHtml;
-        return conf;
-    };
-
-    modulesConfigurations = _addModules(modulesConfigurations);
-    for (var key in modulesConfigurations) {
-        if (modulesConfigurations.hasOwnProperty(key) && modulesConfigurations[key].active) {
-            var module = modulesConfigurations[key].module;
-            module.init(modulesConfigurations[key]);
-            tksNames = module.getTasksNames();
-            _iConf["tasksToCompleteBeforeBrowser"] = _iConf["tasksToCompleteBeforeBrowser"].concat(tksNames);
-            _iConf["tasksThatReloadBrowser"] = _iConf["tasksThatReloadBrowser"].concat(tksNames);
-            _iConf["startupTasks"] = _iConf["startupTasks"].concat(tksNames);
-        }
-    }
-
-    if (browserConfiguration.active) {
-        gulpServer.init(browserConfiguration, tasksToCompleteBeforeBrowser, tasksThatReloadBrowser);
-        startupTasks.push(gulpServer.getTasksNames());
-    }
     var _init = function () {
-        modulesConfigurations = _addModules(modulesConfigurations);
-        for (var key in modulesConfigurations) {
-            if (modulesConfigurations.hasOwnProperty(key) && modulesConfigurations[key].active) {
+        var initSingleModule = function (taskName, taskConf) {
+            var m = module({
+                "gulp": gulp,
+                "getBrowserSyncInstance": _gulpServer.getBrowserSyncInstance,
+                "logAction": console.log
+            });
+            m.init(taskName, taskConf);
+            var tksNames = m.getTasksNames();
+            _conf["tasksToCompleteBeforeBrowser"] = _conf["tasksToCompleteBeforeBrowser"].concat(tksNames);
+            _conf["tasksThatReloadBrowser"] = _conf["tasksThatReloadBrowser"].concat(tksNames);
+            _conf["startupTasks"] = _conf["startupTasks"].concat(tksNames);
+            _conf["tasks"][taskName] = m;
+        };
 
+        var moduleConfiguration;
+        for (var type in modulesConfigurations) {
+            if (modulesConfigurations.hasOwnProperty(type) && modulesConfigurations[type].active) {
+                moduleConfiguration = modulesConfigurations[type];
+                delete moduleConfiguration.active;
+                var module = _modulePerType[type];
+                if (typeof module === "undefined") {
+                    throw new Error("Unknown module type '" + type + "' Expected one of : " + Object.keys(_modulePerType).toString());
+                }
+                for (var taskKey in moduleConfiguration) {
+                    var taskConf = moduleConfiguration[taskKey];
+                    var taskName = moduleConfiguration["name"] ? moduleConfiguration["name"] : type + "_" + taskKey;
+                    if ("active" in taskConf && taskConf["active"] === true) {
+                        initSingleModule(taskName, taskConf);
+                    }
+                }
             }
         }
     };
-    var _start = function () {
-
+    var _initBrowserSync = function () {
+        if (browserConfiguration.active) {
+            _gulpServer.init(browserConfiguration, _conf["tasksToCompleteBeforeBrowser"], _conf["tasksThatReloadBrowser"]);
+            _conf["startupTasks"].push(_gulpServer.getTasksNames());
+        }
+    };
+    var start = function (cb) {
+        for (var taskName in _conf["tasks"]) {
+            if (_conf["tasks"].hasOwnProperty(taskName)) {
+                _conf["tasks"][taskName].start();
+            }
+        }
+        var onStarted = function () {
+            if (typeof cb === "function")
+                cb(_conf["startupTasks"]);
+        };
+        gulp.task('default', _conf["startupTasks"], onStarted);
     };
 
+    var _loadModulesConfigurations = function () {
+        switch (typeof modulesConfigurations) {
+            case "string":
+                // modulesConfigurations can be "path/to/file.json"
+                if (modulesConfigurations.substr(modulesConfigurations.length - 5, 5) === ".json") {
+                    modulesConfigurations = require(modulesConfigurations);
+                }
+                break;
+            case "object":
+                break;
+            default:
+                throw new Error("Expected json path or object as second argument.");
+                break;
+        }
+    };
+
+    _loadModulesConfigurations();
+    _init();
+    _initBrowserSync();
 
     return {
-        start: function (cb) {
-            var onStarted = function () {
-                if (typeof cb === "function")
-                    cb(startupTasks);
-            };
-            gulp.task('default', startupTasks, onStarted);
-        }
+        start: start
     }
 };

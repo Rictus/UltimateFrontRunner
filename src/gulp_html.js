@@ -7,7 +7,7 @@ var tasksNames = [];
 //
 /*************************************************/
 
-var htmlminConf = {
+var htmlminConf = { // TODO Should be in option too
     removeComments: true,
     removeCommentsFromCDATA: true,
     collapseWhitespace: true,
@@ -22,35 +22,43 @@ var htmlminConf = {
     minifyURLs: true
 };
 
-module.exports = function (gulp, getBrowserSyncInstance, logAction) {
-    var _iConf = {};
+module.exports = function gulpHtml(opts) {
+    var gulp = opts["gulp"]; //TODO Change to merge() objects
+    var getBrowserSyncInstance = opts["getBrowserSyncInstance"];
+    var logAction = opts["logAction"];
 
-    var _init = function (taskName, configuration) {
-        _iConf["taskName"] = taskName;
-        _iConf["taskConfiguration"] = configuration;
-        _iConf["streamFunction"] = _buildStreamFunction(configuration);
+    var _conf = {};
+
+    var init = function (taskName, configuration) {
+        tasksNames = [taskName];
+        _conf["taskName"] = taskName;
+        _conf["taskConfiguration"] = configuration;
+        _conf["streamFunction"] = _buildStreamFunction(configuration);
     };
 
     var _buildStreamFunction = function () {
-        var taskConf = _iConf["taskConfiguration"];
+        var taskConf = _conf["taskConfiguration"];
         return function () {
             var stream;
             stream = gulp.src(taskConf.watchPath);
             stream = taskConf.minify ? stream.pipe(htmlmin(htmlminConf)) : stream;
-            stream = stream.pipe(gulp.dest(taskConf.destPath));
+            for (var i = 0; i < taskConf.destPath.length; i++) {
+                var destPath = taskConf.destPath[i];
+                stream = stream.pipe(gulp.dest(destPath));
+            }
             stream = taskConf.streamHTML ? stream.pipe(getBrowserSyncInstance().stream()) : stream;
             return stream;
         };
     };
 
-    var _start = function () {
-        gulp.task(_iConf["taskName"], _iConf["streamFunction"]);
-        gulp.watch(_iConf["taskConfiguration"].watchPath, [_iConf["taskName"]]);
+    var start = function () {
+        gulp.task(_conf["taskName"], _conf["streamFunction"]);
+        gulp.watch(_conf["taskConfiguration"].watchPath, [_conf["taskName"]]);
     };
 
     return {
-        init: _init,
-        start: _start,
+        init: init,
+        start: start,
         getTasksNames: function () {
             return tasksNames;
         }

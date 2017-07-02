@@ -1,6 +1,5 @@
 'use strict';
-
-var browserSync;
+var browserSync = require('browser-sync');
 var mainTaskName = 'serve';
 /*************************************************/
 //
@@ -10,8 +9,7 @@ var mainTaskName = 'serve';
 module.exports = function (gulp) {
     return {
         init: function (conf, tasksToCompleteBeforeLoad, tasksThatReload) {
-            browserSync = require('browser-sync');
-            tasksToCompleteBeforeLoad = tasksToCompleteBeforeLoad && typeof tasksToCompleteBeforeLoad === "object" && tasksToCompleteBeforeLoad.length > 0 ? tasksToCompleteBeforeLoad : [];
+            tasksToCompleteBeforeLoad = Array.isArray(tasksToCompleteBeforeLoad) ? tasksToCompleteBeforeLoad : [];
             browserSync = browserSync.create();
             gulp.task(mainTaskName, tasksToCompleteBeforeLoad, function () {
                 var browserSyncConf = conf;
@@ -35,7 +33,7 @@ module.exports = function (gulp) {
                 }
             });
             if (tasksThatReload && tasksThatReload.length > 0)
-                gulp.task('css-watch', tasksThatReload, browserSync.reload);
+                gulp.task('reload on change', tasksThatReload, browserSync.reload);
         },
         getTasksNames: function () {
             return mainTaskName;

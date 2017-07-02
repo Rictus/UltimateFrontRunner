@@ -25,7 +25,7 @@ var megaConf = {
         dev: {
             active: true,
             name: "prod css no minify",
-            streamCss: false,
+            streamCss: true,
             watchPath: "./dev/css/*.css",
             destPath: "./dev-public/css/",
             concat: true,
@@ -54,7 +54,7 @@ var megaConf = {
         dev: {
             active: true,
             name: "js prod no uglify",
-            streamJs: false,
+            streamJs: true,
             watchPath: "./dev/js/*.js",
             destPath: "./dev-public/js/",
             concat: true,
@@ -83,11 +83,11 @@ var megaConf = {
 };
 
 var browserSync = {
-    active: false,
-    baseDir: "../prod/",
-    indexUrl: "index_2d.html",
+    active: true,
+    baseDir: "./dev-public/",
+    indexUrl: "index.html",
     serverPort: 9031,
-    browsers: [""],
+    browsers: ["chrome"],
     reloadOnTasks: []
 };
 gulpModules(gulp, megaConf, browserSync).start();

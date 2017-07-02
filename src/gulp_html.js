@@ -42,6 +42,9 @@ module.exports = function gulpHtml(opts) {
             var stream;
             stream = gulp.src(taskConf.watchPath);
             stream = taskConf.minify ? stream.pipe(htmlmin(htmlminConf)) : stream;
+            if (!Array.isArray(taskConf.destPath)) {
+                taskConf.destPath = [taskConf.destPath];
+            }
             for (var i = 0; i < taskConf.destPath.length; i++) {
                 var destPath = taskConf.destPath[i];
                 stream = stream.pipe(gulp.dest(destPath));

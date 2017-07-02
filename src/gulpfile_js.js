@@ -31,6 +31,9 @@ module.exports = function (opts) {
             stream = gulp.src(taskConf.watchPath);
             stream = taskConf.concat ? stream.pipe(concat(taskConf.renameTo)) : stream;
             stream = taskConf.uglify ? stream.pipe(uglify()) : stream;
+            if (!Array.isArray(taskConf.destPath)) {
+                taskConf.destPath = [taskConf.destPath];
+            }
             for (var i = 0; i < taskConf.destPath.length; i++) {
                 var destPath = taskConf.destPath[i];
                 stream = stream.pipe(gulp.dest(destPath));

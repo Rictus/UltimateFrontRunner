@@ -38,6 +38,9 @@ module.exports = function (opts) {
             stream = taskConf.concat ? stream.pipe(concat(taskConf.renameTo)) : stream;
             stream = taskConf.autoprefix ? stream.pipe(autoprefixer(taskConf.autoprefixString)) : stream;
             stream = taskConf.minify ? stream.pipe(minify()) : stream;
+            if (!Array.isArray(taskConf.destPath)) {
+                taskConf.destPath = [taskConf.destPath];
+            }
             for (var i = 0; i < taskConf.destPath.length; i++) {
                 var destPath = taskConf.destPath[i];
                 stream = stream.pipe(gulp.dest(destPath));

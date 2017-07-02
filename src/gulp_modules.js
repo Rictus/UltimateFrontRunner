@@ -4,11 +4,11 @@ module.exports = function (gulp, modulesConfigurations, browserConfiguration) {
     var _gulpServer = require('./gulpfile_server.js')(gulp);
 
     var _modulePerType = {
-        "server": require('./gulpfile_server.js'),
-        "css": require('./gulpfile_css.js'),
+        "server": require('./gulp_server.js'),
+        "css": require('./gulp_css.js'),
         "html": require('./gulp_html.js'),
-        "js": require('./gulpfile_js.js'),
-        "img": require('./gulpfile_img.js')
+        "js": require('./gulp_js.js'),
+        "img": require('./gulp_img.js')
     };
     var _conf = {
         tasksThatReloadBrowser: [],

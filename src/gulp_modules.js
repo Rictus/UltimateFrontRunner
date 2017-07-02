@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function (gulp, modulesConfigurations, browserConfiguration) {
-    var _gulpServer = require('./gulpfile_server.js')(gulp);
+    var _gulpServer = require('./gulp_server.js')(gulp);
 
     var _modulePerType = {
         "server": require('./gulp_server.js'),
@@ -70,23 +70,9 @@ module.exports = function (gulp, modulesConfigurations, browserConfiguration) {
         gulp.task('default', _conf["startupTasks"], onStarted);
     };
 
-    var _loadModulesConfigurations = function () {
-        switch (typeof modulesConfigurations) {
-            case "string":
-                // modulesConfigurations can be "path/to/file.json"
-                if (modulesConfigurations.substr(modulesConfigurations.length - 5, 5) === ".json") {
-                    modulesConfigurations = require(modulesConfigurations);
-                }
-                break;
-            case "object":
-                break;
-            default:
-                throw new Error("Expected json path or object as second argument.");
-                break;
-        }
-    };
-
-    _loadModulesConfigurations();
+    if (!(typeof modulesConfigurations === "object")) {
+        throw new Error("Expected json path or object as second argument.");
+    }
     _init();
     _initBrowserSync();
 

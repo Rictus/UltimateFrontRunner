@@ -2,6 +2,7 @@
 
 # Todo 
 * Readme
-* Refactor of gulp_js/css/img
-* Example directory
+* Watch as an option
 * Doc
+* 'Above the fold' plugin for critical css
+* Checkout default options

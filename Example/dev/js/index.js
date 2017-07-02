@@ -7,3 +7,4 @@ function test() {
 }
 
 var foo = new Function();
+//alert("hey");

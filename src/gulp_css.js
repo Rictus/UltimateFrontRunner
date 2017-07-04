@@ -6,7 +6,6 @@ var less = require('gulp-less');
 var plumber = require('gulp-plumber');
 var concat = require('gulp-concat');
 var tasks = {};
-var tasksNames = [];
 /*************************************************/
 //
 //                    C S S
@@ -22,7 +21,6 @@ module.exports = function (opts) {
     var _conf = {};
 
     var _init = function (taskName, configuration) {
-        tasksNames = [taskName];
         _conf["taskName"] = taskName;
         _conf["taskConfiguration"] = configuration;
         _conf["streamFunction"] = _buildStreamFunction(configuration);
@@ -56,9 +54,6 @@ module.exports = function (opts) {
 
     return {
         init: _init,
-        start: _start,
-        getTasksNames: function () {
-            return tasksNames;
-        }
+        start: _start
     }
 };

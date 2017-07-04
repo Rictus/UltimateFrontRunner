@@ -1,6 +1,5 @@
 'use strict';
 var imagemin = require('gulp-imagemin');
-var tasksNames = [];
 /*************************************************/
 //
 //                    I M G
@@ -15,7 +14,6 @@ module.exports = function (opts) {
     var _conf = {};
 
     var init = function (taskName, configuration) {
-        tasksNames = [taskName];
         _conf["taskName"] = taskName;
         _conf["taskConfiguration"] = configuration;
         _conf["streamFunction"] = _buildStreamFunction(configuration);
@@ -45,9 +43,6 @@ module.exports = function (opts) {
 
     return {
         init: init,
-        start: start,
-        getTasksNames: function () {
-            return tasksNames;
-        }
+        start: start
     };
 };

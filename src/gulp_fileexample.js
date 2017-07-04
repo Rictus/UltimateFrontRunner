@@ -1,5 +1,4 @@
 'use strict';
-var tasksNames = [];
 /*************************************************/
 //
 //                    E X A M P L E
@@ -14,7 +13,6 @@ module.exports = function gulpExample(opts) {
     var _conf = {};
 
     var init = function (taskName, configuration) {
-        tasksNames = [taskName];
         _conf["taskName"] = taskName;
         _conf["taskConfiguration"] = configuration;
         _conf["streamFunction"] = _buildStreamFunction(configuration);
@@ -36,9 +34,6 @@ module.exports = function gulpExample(opts) {
 
     return {
         init: init,
-        start: start,
-        getTasksNames: function () {
-            return tasksNames;
-        }
+        start: start
     }
 };

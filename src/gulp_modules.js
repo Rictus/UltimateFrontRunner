@@ -25,10 +25,9 @@ module.exports = function (gulp, modulesConfigurations, browserConfiguration) {
                 "logAction": console.log
             });
             m.init(taskName, taskConf);
-            var tksNames = m.getTasksNames();
-            _conf["tasksToCompleteBeforeBrowser"] = _conf["tasksToCompleteBeforeBrowser"].concat(tksNames);
-            _conf["tasksThatReloadBrowser"] = _conf["tasksThatReloadBrowser"].concat(tksNames);
-            _conf["startupTasks"] = _conf["startupTasks"].concat(tksNames);
+            _conf["tasksToCompleteBeforeBrowser"] = _conf["tasksToCompleteBeforeBrowser"].push(taskName);
+            _conf["tasksThatReloadBrowser"] = _conf["tasksThatReloadBrowser"].push(taskName);
+            _conf["startupTasks"] = _conf["startupTasks"].push(taskName);
             _conf["tasks"][taskName] = m;
         };
 

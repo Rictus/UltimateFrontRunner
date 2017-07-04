@@ -1,6 +1,5 @@
 'use strict';
 var htmlmin = require('gulp-htmlmin');
-var tasksNames = [];
 /*************************************************/
 //
 //                    H T M L
@@ -30,7 +29,6 @@ module.exports = function gulpHtml(opts) {
     var _conf = {};
 
     var init = function (taskName, configuration) {
-        tasksNames = [taskName];
         _conf["taskName"] = taskName;
         _conf["taskConfiguration"] = configuration;
         _conf["streamFunction"] = _buildStreamFunction(configuration);
@@ -61,9 +59,6 @@ module.exports = function gulpHtml(opts) {
 
     return {
         init: init,
-        start: start,
-        getTasksNames: function () {
-            return tasksNames;
-        }
+        start: start
     }
 };

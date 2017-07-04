@@ -1,14 +1,14 @@
 'use strict';
 
 module.exports = function (gulp, modulesConfigurations, browserConfiguration) {
-    var _gulpServer = require('./gulp_server.js')(gulp);
+    var _gulpServer = require('./modules/gulp_server.js')(gulp);
 
     var _modulePerType = {
-        "server": require('./gulp_server.js'),
-        "css": require('./gulp_css.js'),
-        "html": require('./gulp_html.js'),
-        "js": require('./gulp_js.js'),
-        "img": require('./gulp_img.js')
+        "server": require('./modules/gulp_server.js'),
+        "css": require('./modules/gulp_css.js'),
+        "html": require('./modules/gulp_html.js'),
+        "js": require('./modules/gulp_js.js'),
+        "img": require('./modules/gulp_img.js')
     };
     var _conf = {
         tasksThatReloadBrowser: [],

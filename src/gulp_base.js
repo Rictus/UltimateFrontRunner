@@ -22,7 +22,10 @@ GulpBase.prototype.init = function (taskName, configuration) {
 
 GulpBase.prototype.start = function () {
     this.gulp.task(this._conf["taskName"], this._conf["streamFunction"]);
-    this.gulp.watch(this._conf["taskConfiguration"].watchPath, [this._conf["taskName"]]);
+    if ("watch" in this._conf && this._conf === false) {
+    } else {
+        this.gulp.watch(this._conf["taskConfiguration"].watchPath, [this._conf["taskName"]]);
+    }
 };
 
 GulpBase.prototype._buildStreamFunction = function () {

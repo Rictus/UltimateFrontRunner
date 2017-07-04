@@ -61,7 +61,7 @@ var megaConf = {
             "streamJs": true,
             "watchPath": "./dev/js/*.js",
             "destPath": "./dev-public/js/",
-            "watch": true,
+            "watch": false,
             "concat": true,
             "renameTo": 'global.min.js',
             "uglify": false
@@ -72,7 +72,7 @@ var megaConf = {
             "streamJs": false,
             "watchPath": "./dev/js/*.js",
             "destPath": "./prod-public/js/",
-            "watch": true,
+            "watch": false,
             "concat": true,
             "renameTo": 'global.min.js',
             "uglify": true

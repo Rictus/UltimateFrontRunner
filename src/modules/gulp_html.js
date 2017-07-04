@@ -1,5 +1,5 @@
 'use strict';
-var GulpBase = require('./gulp_base');
+var GulpBase = require('./../gulp_base');
 var util = require('util');
 var htmlmin = require('gulp-htmlmin');
 /*************************************************/

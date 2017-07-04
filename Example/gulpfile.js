@@ -9,6 +9,7 @@ var megaConf = {
             "streamHTML": false,
             "watchPath": "./dev/index.html",
             "destPath": "./dev-public/",
+            "watch": true,
             "minify": false
         },
         "prod": {
@@ -17,6 +18,7 @@ var megaConf = {
             "streamHTML": false,
             "watchPath": "./dev/index.html",
             "destPath": "./prod-public/",
+            "watch": true,
             "minify": true
         }
     },
@@ -28,6 +30,7 @@ var megaConf = {
             "streamCss": true,
             "watchPath": "./dev/css/*.css",
             "destPath": "./dev-public/css/",
+            "watch": true,
             "concat": true,
             "autoprefix": true,
             "renameTo": "style.min.css",
@@ -41,6 +44,7 @@ var megaConf = {
             "streamCss": false,
             "watchPath": "./dev/css/*.css",
             "destPath": "./prod-public/css/",
+            "watch": true,
             "concat": true,
             "renameTo": "style.min.css",
             "autoprefix": true,
@@ -57,6 +61,7 @@ var megaConf = {
             "streamJs": true,
             "watchPath": "./dev/js/*.js",
             "destPath": "./dev-public/js/",
+            "watch": true,
             "concat": true,
             "renameTo": 'global.min.js',
             "uglify": false
@@ -67,6 +72,7 @@ var megaConf = {
             "streamJs": false,
             "watchPath": "./dev/js/*.js",
             "destPath": "./prod-public/js/",
+            "watch": true,
             "concat": true,
             "renameTo": 'global.min.js',
             "uglify": true
@@ -77,7 +83,8 @@ var megaConf = {
         "dev": {
             "active": true,
             "watchPath": "./dev/img/*.{png,jpg,jpeg,gif,svg}",
-            "destPath": ["./dev-public/img/", "./prod-public/img/"]
+            "destPath": ["./dev-public/img/", "./prod-public/img/"],
+            "watch": true
         }
     }
 };

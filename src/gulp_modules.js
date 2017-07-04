@@ -18,16 +18,17 @@ module.exports = function (gulp, modulesConfigurations, browserConfiguration) {
     };
 
     var _init = function () {
-        var initSingleModule = function (taskName, taskConf) {
-            var m = module({
+        var initSingleModule = function (module, taskName, taskConf) {
+            var m = new module({
                 "gulp": gulp,
                 "getBrowserSyncInstance": _gulpServer.getBrowserSyncInstance,
                 "logAction": console.log
             });
             m.init(taskName, taskConf);
-            _conf["tasksToCompleteBeforeBrowser"] = _conf["tasksToCompleteBeforeBrowser"].push(taskName);
-            _conf["tasksThatReloadBrowser"] = _conf["tasksThatReloadBrowser"].push(taskName);
-            _conf["startupTasks"] = _conf["startupTasks"].push(taskName);
+
+            _conf["tasksToCompleteBeforeBrowser"] = _conf["tasksToCompleteBeforeBrowser"].concat([taskName]);
+            _conf["tasksThatReloadBrowser"] = _conf["tasksThatReloadBrowser"].concat([taskName]);
+            _conf["startupTasks"] = _conf["startupTasks"].concat([taskName]);
             _conf["tasks"][taskName] = m;
         };
 
@@ -44,7 +45,7 @@ module.exports = function (gulp, modulesConfigurations, browserConfiguration) {
                     var taskConf = moduleConfiguration[taskKey];
                     var taskName = moduleConfiguration["name"] ? moduleConfiguration["name"] : type + "_" + taskKey;
                     if ("active" in taskConf && taskConf["active"] === true) {
-                        initSingleModule(taskName, taskConf);
+                        initSingleModule(module, taskName, taskConf);
                     }
                 }
             }

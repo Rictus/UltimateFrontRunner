@@ -1,39 +1,21 @@
 'use strict';
 /*************************************************/
-//
 //                    E X A M P L E
-//
 /*************************************************/
 
-module.exports = function gulpExample(opts) {
-    var gulp = opts["gulp"]; //TODO Change to merge() objects
-    var getBrowserSyncInstance = opts["getBrowserSyncInstance"];
-    var logAction = opts["logAction"];
+function GulpExample(opts) {
+    GulpBase.apply(this, arguments);
+}
 
-    var _conf = {};
+util.inherits(GulpExample, GulpBase);
 
-    var init = function (taskName, configuration) {
-        _conf["taskName"] = taskName;
-        _conf["taskConfiguration"] = configuration;
-        _conf["streamFunction"] = _buildStreamFunction(configuration);
+GulpExample.prototype._buildStreamFunction = function () {
+    var taskConf = _conf["taskConfiguration"];
+    return function () {
+        var stream;
+        // Add here streams & pipes of gulp packages
+        return stream;
     };
-
-    var _buildStreamFunction = function () {
-        var taskConf = _conf["taskConfiguration"];
-        return function () {
-            var stream;
-            // Add here streams & pipes of gulp packages
-            return stream;
-        };
-    };
-
-    var start = function () {
-        gulp.task(_conf["taskName"], _conf["streamFunction"]);
-        gulp.watch(_conf["taskConfiguration"].watchPath, [_conf["taskName"]]);
-    };
-
-    return {
-        init: init,
-        start: start
-    }
 };
+
+module.exports = GulpExample;
